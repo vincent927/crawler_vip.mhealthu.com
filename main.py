@@ -14,7 +14,7 @@ headers = {
 domain = 'http://vip.mhealthu.com'
 info = []
 for n in range(128, -8, -8):#按照更新时间正序排列
-    print(n)
+    # print(n)
     url = 'http://vip.mhealthu.com/Index/index/0/0/0/{}'.format(n)
     # print(n)
     # print(url)
@@ -24,7 +24,9 @@ for n in range(128, -8, -8):#按照更新时间正序排列
     # print(wb_data.content)
     soup = BeautifulSoup(r, 'lxml')
     # print(soup)
+    #视频标题
     titles = soup.select('body > div.container.pad_mar_0.wid.home_con > div.col-xs-8.col-sm-8.col-md-8.pad_mar_0.pull-right.curriculum > ul > li > div.pro_img > a > img ')
+    #视频播放链接
     vod_links = soup.select('body > div.container.pad_mar_0.wid.home_con > div.col-xs-8.col-sm-8.col-md-8.pad_mar_0.pull-right.curriculum > ul > li > div.pro_img > a')
     for title, vod_link in zip(titles[::-1], vod_links[::-1]): #按照更新时间正序排列
         url = domain + vod_link.get('href').replace('show_v', 'show_vv')
@@ -44,12 +46,14 @@ for n in range(128, -8, -8):#按照更新时间正序排列
         title = title.get('alt')
         vod_link = domain + vod_link.get('href').replace('show_v', 'show_vv')
         # print(file_id, title, image_link, vod_link, file_link, create_time)
-        sql = '''insert into info (file_id,title,image_link,vod_link,file_link,create_time)
-                 values ('{}','{}','{}','{}','{}','{}')'.format
-                 (file_id, title, image_link, vod_link, file_link, create_time)' ||
-              '''
-        print(sql)
-        # cursor.execute(sql)
+        sql = '''
+        insert into data
+        (file_id,title,image_link,vod_link,file_link,create_time)
+        values ('{}','{}','{}','{}','{}','{}')
+        '''\
+        .format(file_id, title, image_link, vod_link, file_link, create_time)
+        # print(sql)
+        cursor.execute(sql)
         # print(file_link, image_link)
         # data = {
         #     'file_id': file_id,
@@ -72,20 +76,18 @@ for n in range(128, -8, -8):#按照更新时间正序排列
         # finally:
         #     print('创建{}成功'.format(directory))
         #     os.chdir(work_dir)
-        print('开始下载{}'.format(file_link))
         now = time.strftime("%Y-%m-%d %H:%M:%S")
-        print(now)
-        os.system('/usr/local/bin/wget -r -N {}'.format(file_link))
-        end = time.strftime("%Y-%m-%d %H:%M:%S")
-        print('{}下载完成'.format(file_link))
-        print(end)
-        print('开始下载{}'.format(image_link))
+        print('{} 开始下载 {}'.format(now, file_link))
+        os.system('/usr/local/bin/wget -r -q -N {}'.format(file_link))
+        # end = time.strftime("%Y-%m-%d %H:%M:%S")
+        # print('{}下载完成'.format(file_link))
+        # print(end)
         now = time.strftime("%Y-%m-%d %H:%M:%S")
-        print(now)
-        os.system('/usr/local/bin/wget -r -N {}'.format(image_link))
-        end = time.strftime("%Y-%m-%d %H:%M:%S")
-        print('{}下载完成'.format(image_link))
-        print(end)
+        print('{} 开始下载 {}'.format(now, image_link))
+        os.system('/usr/local/bin/wget -r -q -N {}'.format(image_link))
+        # end = time.strftime("%Y-%m-%d %H:%M:%S")
+        # print('{}下载完成'.format(image_link))
+        # print(end)
 
 
 cursor.close()
