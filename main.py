@@ -5,8 +5,15 @@ import os
 import time
 
 
+db_host = 'localhost'
+db_user = 'root'
+db_passwd = '123456'
+db_name = 'data'
+tb_name = 'data'
+
+
 #数据库连接信息
-db = pymysql.connect("localhost", "root", "123456", "data", charset='utf8')
+db = pymysql.connect(db_host, db_user, db_passwd, db_name, charset='utf8')
 cursor = db.cursor()
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
@@ -48,11 +55,11 @@ for n in range(128, -8, -8):#按照更新时间正序排列
         vod_link = domain + vod_link.get('href').replace('show_v', 'show_vv')
         # print(file_id, title, image_link, vod_link, file_link, create_time)
         sql = '''
-        insert into data
+        insert into {}
         (file_id,title,image_link,vod_link,file_link,create_time)
         values ('{}','{}','{}','{}','{}','{}')
         '''\
-        .format(file_id, title, image_link, vod_link, file_link, create_time)
+        .format(tb_name, file_id, title, image_link, vod_link, file_link, create_time)
         # print(sql)
         cursor.execute(sql)
         # print(file_link, image_link)
