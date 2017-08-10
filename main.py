@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import pymysql
 import os
-import datetime,time
+import time
+
 
 #数据库连接信息
 db = pymysql.connect("localhost", "root", "123456", "data", charset='utf8')
