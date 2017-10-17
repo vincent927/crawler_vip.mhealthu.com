@@ -43,8 +43,10 @@ for n in range(280, -8, -8):#按照更新时间正序排列
         soup = BeautifulSoup(r, 'html.parser')
         s = soup.select('body > div.container.pad_mar_0.pro_video > div.col-xs-7.col-sm-7.col-md-7.pad_mar_0 > div')
         t = s[0].get_text()
+        #视频唯一ID
         file_id = t[345:364]
         # print(file_id)
+        #通过file_id调用腾讯云视频接口获取视频详细信息
         url = 'http://play.video.qcloud.com/index.php?file_id={}&refer=vip%2Emhealthu%2Ecom&interface=Vod_Api_GetPlayInfo&app_id=1252762320'.format(file_id)
         response = requests.get(url, headers=headers)
         json = response.json()
