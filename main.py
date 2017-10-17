@@ -8,7 +8,7 @@ import time
 db_host = 'localhost'
 db_user = 'root'
 db_passwd = '123456'
-db_name = 'data'
+db_name = 'vip.mhealthu.com'
 tb_name = 'data'
 
 
@@ -17,11 +17,11 @@ db = pymysql.connect(db_host, db_user, db_passwd, db_name, charset='utf8')
 cursor = db.cursor()
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
-    'Cookie': 'hy_session=d65094cdea2820547737268cbaee6978066a48d4'
+    'Cookie': 'hy_session=2d4ee5ee307cbdeb168824782585e0e253cd5f69'
 }
 domain = 'http://vip.mhealthu.com'
 info = []
-for n in range(128, -8, -8):#按照更新时间正序排列
+for n in range(280, -8, -8):#按照更新时间正序排列
     # print(n)
     url = 'http://vip.mhealthu.com/Index/index/0/0/0/{}'.format(n)
     # print(n)
@@ -51,17 +51,11 @@ for n in range(128, -8, -8):#按照更新时间正序排列
         file_link = json['data']['file_info']['image_video']['videoUrls'][0]['url']
         image_link = json['data']['file_info']['image_url']
         create_time = json['data']['file_info']['create_time']
-        title = title.get('alt')
+        #获取视频标题，并去除左边空格
+        title = title.get('alt').lstrip()
+        print(title)
         vod_link = domain + vod_link.get('href').replace('show_v', 'show_vv')
         # print(file_id, title, image_link, vod_link, file_link, create_time)
-        sql = '''
-        insert into {}
-        (file_id,title,image_link,vod_link,file_link,create_time)
-        values ('{}','{}','{}','{}','{}','{}')
-        '''\
-        .format(tb_name, file_id, title, image_link, vod_link, file_link, create_time)
-        # print(sql)
-        cursor.execute(sql)
         # print(file_link, image_link)
         # data = {
         #     'file_id': file_id,
@@ -84,15 +78,30 @@ for n in range(128, -8, -8):#按照更新时间正序排列
         # finally:
         #     print('创建{}成功'.format(directory))
         #     os.chdir(work_dir)
+        #视频文件绝对路径
+        file_path = 'videos/'+title+'.mp4'
+        # print(file_path)
+        if os.path.exists(file_path):
+            continue
         now = time.strftime("%Y-%m-%d %H:%M:%S")
-        print('{} 开始下载 {}'.format(now, file_link))
-        os.system('/usr/local/bin/wget -r -q -N {}'.format(file_link))
+        print('{} 开始下载 {}'.format(now, title))
+        print(file_link)
+        # print('wget  -q -N -O {} {}'.format(file_path, file_link))
+        os.system('wget  -q -N -O {} {}'.format(file_path, file_link))
+        sql = '''
+        insert into {}
+        (file_id,title,image_link,vod_link,file_link,create_time)
+        values ('{}','{}','{}','{}','{}','{}')
+        '''\
+        .format(tb_name, file_id, title, image_link, vod_link, file_link, create_time)
+        # print(sql)
+        cursor.execute(sql)
         # end = time.strftime("%Y-%m-%d %H:%M:%S")
         # print('{}下载完成'.format(file_link))
         # print(end)
-        now = time.strftime("%Y-%m-%d %H:%M:%S")
-        print('{} 开始下载 {}'.format(now, image_link))
-        os.system('/usr/local/bin/wget -r -q -N {}'.format(image_link))
+        # now = time.strftime("%Y-%m-%d %H:%M:%S")
+        # print('{} 开始下载 {}'.format(now, image_link))
+        # os.system('wget -r -q -N -O {}.jpg {}'.format(title, image_link))
         # end = time.strftime("%Y-%m-%d %H:%M:%S")
         # print('{}下载完成'.format(image_link))
         # print(end)
