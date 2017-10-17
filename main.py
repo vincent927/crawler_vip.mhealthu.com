@@ -53,7 +53,7 @@ for n in range(280, -8, -8):#按照更新时间正序排列
         create_time = json['data']['file_info']['create_time']
         #获取视频标题，并去除左边空格
         title = title.get('alt').lstrip()
-        print(title)
+        # print(title)
         vod_link = domain + vod_link.get('href').replace('show_v', 'show_vv')
         # print(file_id, title, image_link, vod_link, file_link, create_time)
         # print(file_link, image_link)
@@ -78,22 +78,23 @@ for n in range(280, -8, -8):#按照更新时间正序排列
         # finally:
         #     print('创建{}成功'.format(directory))
         #     os.chdir(work_dir)
-        #视频文件绝对路径
+        #视频文件相对路径
         file_path = 'videos/'+title+'.mp4'
         # print(file_path)
         if os.path.exists(file_path):
+            print('{}已存在'.format(file_path))
             continue
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         print('{} 开始下载 {}'.format(now, title))
         print(file_link)
         # print('wget  -q -N -O {} {}'.format(file_path, file_link))
         os.system('wget  -q -N -O {} {}'.format(file_path, file_link))
-        sql = '''
-        insert into {}
-        (file_id,title,image_link,vod_link,file_link,create_time)
-        values ('{}','{}','{}','{}','{}','{}')
-        '''\
-        .format(tb_name, file_id, title, image_link, vod_link, file_link, create_time)
+        # sql = '''
+        # insert into {}
+        # (file_id,title,image_link,vod_link,file_link,create_time)
+        # values ('{}','{}','{}','{}','{}','{}')
+        # '''\
+        # .format(tb_name, file_id, title, image_link, vod_link, file_link, create_time)
         # print(sql)
         cursor.execute(sql)
         # end = time.strftime("%Y-%m-%d %H:%M:%S")
